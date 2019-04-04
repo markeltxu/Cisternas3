@@ -42,6 +42,8 @@ public class Principal extends AppCompatActivity {
     int diaRecogida,diaEntrega;
     boolean semaforo = false;
     ArrayList<String> datosSQL = new ArrayList<String>();
+    String nombreVentana;
+    String nombreMatricula;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,9 +64,9 @@ public class Principal extends AppCompatActivity {
         //---------------------------------------------------
         situacion = (EditText)findViewById(R.id.situacion);
 
-        final String nombreVentana = getIntent().getExtras().getString("nombreUser");
+        nombreVentana = getIntent().getExtras().getString("nombreUser");
         nombreUser.setText(nombreVentana);
-        final String nombreMatricula = getIntent().getExtras().getString("nombreMatricula");
+        nombreMatricula = getIntent().getExtras().getString("nombreMatricula");
         matricula.setText(nombreMatricula);
 
 
@@ -332,7 +334,10 @@ public class Principal extends AppCompatActivity {
     }
 
     public void chat(View view){
-        Intent i = new Intent(this,Chat.class);
-        startActivity(i);
+        Intent ven = new Intent(Principal.this, Chat.class);
+        ven.putExtra("nombreUser", nombreVentana);
+        //ven.putExtra("nombreMatricula", guardarCisterna);
+        startActivity(ven);
+
     }
 }
