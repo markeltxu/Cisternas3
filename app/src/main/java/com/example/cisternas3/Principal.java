@@ -44,6 +44,7 @@ public class Principal extends AppCompatActivity {
     ArrayList<String> datosSQL = new ArrayList<String>();
     String nombreVentana;
     String nombreMatricula;
+    String idVentana;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +69,7 @@ public class Principal extends AppCompatActivity {
         nombreUser.setText(nombreVentana);
         nombreMatricula = getIntent().getExtras().getString("nombreMatricula");
         matricula.setText(nombreMatricula);
+        idVentana = getIntent().getExtras().getString("id");
 
 
         Response.Listener<String> responseListener = new Response.Listener<String>() {
@@ -258,26 +260,17 @@ public class Principal extends AppCompatActivity {
         dia = cal.get(Calendar.DAY_OF_MONTH);
 
 
-        if(guardarEntregaFecha.matches("")) {
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    recogidaFecha.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-                    diaRecogida = dayOfMonth;
-                }
-            }, anyo, mes, dia);
 
-            datePickerDialog.show();
-        }else{
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    recogidaFecha.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                    diaRecogida = dayOfMonth;
-                }
-            },anyo,mes,diaEntrega-1);
-            datePickerDialog.show();
-        }
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                recogidaFecha.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                //diaRecogida = dayOfMonth;
+            }
+        }, anyo, mes, dia);
+
+        datePickerDialog.show();
+
     }
 
     public void fechaEntrega1(View v){
@@ -289,27 +282,17 @@ public class Principal extends AppCompatActivity {
         dia = cal.get(Calendar.DAY_OF_MONTH);
 
 
-        if(guardarRecogidaFecha.matches("")){
-            Toast.makeText(getApplicationContext(),"VACIO " , Toast.LENGTH_SHORT).show();
+
+            //Toast.makeText(getApplicationContext(),"VACIO " , Toast.LENGTH_SHORT).show();
             DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     entregaFecha.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                    diaEntrega = dayOfMonth;
+                    //diaEntrega = dayOfMonth;
                 }
             },anyo,mes,dia);
             datePickerDialog.show();
-        }else{
-            Toast.makeText(getApplicationContext(),"TIENE DATOS"+diaRecogida , Toast.LENGTH_SHORT).show();
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    entregaFecha.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                    diaEntrega = dayOfMonth;
-                }
-            },anyo,mes,diaRecogida+1);
-            datePickerDialog.show();
-        }
+
 
 
     }
@@ -336,7 +319,7 @@ public class Principal extends AppCompatActivity {
     public void chat(View view){
         Intent ven = new Intent(Principal.this, Chat.class);
         ven.putExtra("nombreUser", nombreVentana);
-        //ven.putExtra("nombreMatricula", guardarCisterna);
+        ven.putExtra("idVentana", idVentana);
         startActivity(ven);
 
     }
