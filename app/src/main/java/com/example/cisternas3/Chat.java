@@ -1,8 +1,11 @@
 package com.example.cisternas3;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -22,13 +25,15 @@ public class Chat extends AppCompatActivity {
 //Pag del listado de usuraios para chatear.
     ListView listaUsuarios;
     String guardarId;
+    String nombreVentana;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         listaUsuarios = (ListView) findViewById(R.id.listaUsuarios);
 
-        String nombreVentana = getIntent().getExtras().getString("nombreUser");
+        nombreVentana = getIntent().getExtras().getString("nombreUser");
         guardarId = getIntent().getExtras().getString("idVentana");
         final ArrayList<String> usuariosLista = new ArrayList<>();
         Toast.makeText(getApplicationContext(),"ID: " + guardarId, Toast.LENGTH_SHORT).show();
@@ -45,8 +50,8 @@ public class Chat extends AppCompatActivity {
                         JSONObject matricula = values.getJSONObject(i);
 
                         //int id = animal.getInt("id");
-                        species = matricula.getString("id");
-                        //Log.e("BIENBIEN", "" + ":"+ " animales: " + matricula);
+                        species = matricula.getString("nombre");
+                        Log.e("BIENBIEN", "" + ":"+ " animales: " + matricula);
                         usuariosLista.add(species);
                         //String name = animal.getString("name");
                         //println(id + ", " + species + ", " + name);
@@ -61,10 +66,21 @@ public class Chat extends AppCompatActivity {
                 }
             }
         };
-        listaUsuariosChatRequest listaUsuariosChatRequest = new listaUsuariosChatRequest(guardarId,responseListener);
+        listaUsuariosChatRequest listaUsuariosChatRequest = new listaUsuariosChatRequest(nombreVentana,responseListener);
         RequestQueue queue = Volley.newRequestQueue(Chat.this);
         queue.add(listaUsuariosChatRequest);
 
+        listaUsuarios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String guardarNum = usuariosLista.get(position);
 
+
+                Intent ven = new Intent(Chat.this, ChatMensaje.class);
+                ven.putExtra("usuOrigen", nombreVentana);
+                ven.putExtra("usuDestino", guardarNum);
+                startActivity(ven);
+            }
+        });
     }
 }
