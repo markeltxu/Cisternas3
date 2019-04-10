@@ -36,7 +36,7 @@ public class Chat extends AppCompatActivity {
         nombreVentana = getIntent().getExtras().getString("nombreUser");
         guardarId = getIntent().getExtras().getString("idVentana");
         final ArrayList<String> usuariosLista = new ArrayList<>();
-        Toast.makeText(getApplicationContext(),"ID: " + guardarId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),"ID: " + guardarId, Toast.LENGTH_SHORT).show();
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
