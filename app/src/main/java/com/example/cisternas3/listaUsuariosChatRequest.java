@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class listaUsuariosChatRequest extends StringRequest{
-        private static final String listaUsuariosChat_REQUEST="http://192.168.1.45/listaUsuariosChat.php";
+        private static final String listaUsuariosChat_REQUEST="http://www.innovabilbao.com/app/ListaUsuariosChat.php";
         private Map<String,String> params;
 
         public listaUsuariosChatRequest(String nombre,Response.Listener<String> listener){

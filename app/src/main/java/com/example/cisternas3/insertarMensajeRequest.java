@@ -9,7 +9,7 @@ import java.util.Map;
 public class insertarMensajeRequest extends StringRequest {
     //clase q hace todo el trabajo
 
-    private static final String insertarMensaje_REQUEST="http://192.168.1.45/insertarMensaje.php";
+    private static final String insertarMensaje_REQUEST="http://www.innovabilbao.com/app/insertarMensaje.php";
     private Map<String,String> params;
 
     public insertarMensajeRequest(String usuarioOrigen, String usuarioDestino, String mensaje, Response.Listener<String> listener){

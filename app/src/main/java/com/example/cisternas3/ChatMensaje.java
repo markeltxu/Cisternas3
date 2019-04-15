@@ -1,6 +1,7 @@
 package com.example.cisternas3;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,8 @@ public class ChatMensaje extends AppCompatActivity {
     String usuarioOrigen, usuarioDestino, fecha;
     EditText texto;
     ListView verMensaje;
+    int tamanioAnterior = 0, tamanioActual = 0;
+    boolean semaforo = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,16 +48,28 @@ public class ChatMensaje extends AppCompatActivity {
         Date date = new Date();
 
         fecha = dateFormat.format(date);
-
+        verMensaje.getLastVisiblePosition();
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                verMensajes();
-                handler.postDelayed(this, 1000);
-            }
-        }, 1000);
+        final Parcelable state = verMensaje.onSaveInstanceState();
+        final int index = verMensaje.getFirstVisiblePosition();
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    verMensajes();
+                    //Log.e("BIENBIEN", "SEMAFORO " + semaforo );
+                    /*View v = verMensaje.getChildAt(0);
+                    int top = (v == null) ? 0 : (v.getTop() - verMensaje.getPaddingTop());
+                    verMensaje.setSelectionFromTop(index, top);*/
+
+                    //verMensaje.getLastVisiblePosition();
+                    //verMensaje.onRestoreInstanceState(state);
+                    handler.postDelayed(this, 1000);
+                }
+            }, 1);
+
         //Toast.makeText(getApplicationContext(), "Fecha:" + fecha, Toast.LENGTH_SHORT).show();
+
     }
 
     public void textoA(View view){
@@ -85,7 +100,8 @@ public class ChatMensaje extends AppCompatActivity {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
             String guardarIdMensaje, guardarUsuOrigen, guardarUsuDestino, guardarMensaje;
             String guardaFilaCompleta;
-            final ArrayList<String> guardarMensajes = new ArrayList<>();
+            ArrayList<String> guardarMensajes = new ArrayList<>();
+            ArrayList<MensajesPlantilla> listaMensajes = new ArrayList<MensajesPlantilla>();
             @Override
             public void onResponse(String response) {
                 try {
@@ -103,15 +119,24 @@ public class ChatMensaje extends AppCompatActivity {
 
                         guardaFilaCompleta = guardarUsuOrigen + " \n" + guardarMensaje + " \n" + fecha;
                         guardarMensajes.add(guardaFilaCompleta);
-                        //Toast.makeText(getApplicationContext(), guardaFilaCompleta, Toast.LENGTH_SHORT).show();
-                        Log.e("BIENBIEN", "" + ":"+ " animales: " + matricula);
-                        //usuariosLista.add(species);
-                        //String name = animal.getString("name");
-                        //println(id + ", " + species + ", " + name);
+
+                        listaMensajes.add(new MensajesPlantilla(usuarioOrigen,guardarMensaje,fecha));
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ChatMensaje.this, android.R.layout.simple_spinner_dropdown_item, guardarMensajes);
-                    verMensaje.setAdapter(adapter);
+                    Log.e("BIENBIEN", "SEMAFORO " + semaforo + "tamanioAnterior " + tamanioAnterior + "listaAcutal tamaño" +guardarMensajes.size());
+                    if(tamanioAnterior == guardarMensajes.size()){
+                        semaforo = false;
+                    }else{
+                        semaforo = true;
+                    }
+                    if(semaforo) {
+                        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(ChatMensaje.this, android.R.layout.simple_spinner_dropdown_item, guardarMensajes);
+                        //verMensaje.setAdapter(adapter);
+                        AdaptadorMensaje miAdaptador = new AdaptadorMensaje(getApplicationContext(),listaMensajes);
+                        verMensaje.setAdapter(miAdaptador);
+                    }
+
+                    tamanioAnterior = guardarMensajes.size();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -119,8 +144,9 @@ public class ChatMensaje extends AppCompatActivity {
             }
         };
 
-        ObtenerMensajesRequest obtenerMensajesRequest = new ObtenerMensajesRequest(usuarioOrigen,usuarioDestino,responseListener);
-        RequestQueue queue = Volley.newRequestQueue(ChatMensaje.this);
-        queue.add(obtenerMensajesRequest);
+            ObtenerMensajesRequest obtenerMensajesRequest = new ObtenerMensajesRequest(usuarioOrigen, usuarioDestino, responseListener);
+            RequestQueue queue = Volley.newRequestQueue(ChatMensaje.this);
+            queue.add(obtenerMensajesRequest);
+
     }
 }
