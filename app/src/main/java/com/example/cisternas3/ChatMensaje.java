@@ -44,10 +44,7 @@ public class ChatMensaje extends AppCompatActivity {
         usuarioDestino = getIntent().getExtras().getString("usuDestino");
         verMensaje = (ListView) findViewById(R.id.verMensaje);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm a", Locale.getDefault());
-        Date date = new Date();
 
-        fecha = dateFormat.format(date);
         verMensaje.getLastVisiblePosition();
         final Handler handler = new Handler();
         final Parcelable state = verMensaje.onSaveInstanceState();
@@ -57,6 +54,10 @@ public class ChatMensaje extends AppCompatActivity {
                 @Override
                 public void run() {
                     verMensajes();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm a", Locale.getDefault());
+                    Date date = new Date();
+
+                    fecha = dateFormat.format(date);
                     //Log.e("BIENBIEN", "SEMAFORO " + semaforo );
                     /*View v = verMensaje.getChildAt(0);
                     int top = (v == null) ? 0 : (v.getTop() - verMensaje.getPaddingTop());
@@ -81,6 +82,8 @@ public class ChatMensaje extends AppCompatActivity {
         String guardarMensaje = texto.getText().toString();
         texto.setText("");
 
+
+
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
@@ -89,7 +92,7 @@ public class ChatMensaje extends AppCompatActivity {
             }
         };
 
-        insertarMensajeRequest insertarMensajeRequest = new insertarMensajeRequest(usuarioOrigen,usuarioDestino,guardarMensaje, responseListener);
+        insertarMensajeRequest insertarMensajeRequest = new insertarMensajeRequest(usuarioOrigen,usuarioDestino,guardarMensaje,fecha, responseListener);
         RequestQueue queue = Volley.newRequestQueue(ChatMensaje.this);
         queue.add(insertarMensajeRequest);
 
@@ -98,7 +101,7 @@ public class ChatMensaje extends AppCompatActivity {
 
     public void verMensajes(){
         Response.Listener<String> responseListener = new Response.Listener<String>() {
-            String guardarIdMensaje, guardarUsuOrigen, guardarUsuDestino, guardarMensaje;
+            String guardarIdMensaje, guardarUsuOrigen, guardarUsuDestino, guardarMensaje, guardarFechaHora;
             String guardaFilaCompleta;
             ArrayList<String> guardarMensajes = new ArrayList<>();
             ArrayList<MensajesPlantilla> listaMensajes = new ArrayList<MensajesPlantilla>();
@@ -116,11 +119,11 @@ public class ChatMensaje extends AppCompatActivity {
                         guardarUsuOrigen = matricula.getString("usuarioOrigen");
                         guardarUsuDestino = matricula.getString("usuarioDestino");
                         guardarMensaje = matricula.getString("mensaje");
-
+                        guardarFechaHora = matricula.getString("FechaHora");
                         guardaFilaCompleta = guardarUsuOrigen + " \n" + guardarMensaje + " \n" + fecha;
                         guardarMensajes.add(guardaFilaCompleta);
 
-                        listaMensajes.add(new MensajesPlantilla(usuarioOrigen,guardarMensaje,fecha));
+                        listaMensajes.add(new MensajesPlantilla(usuarioOrigen,guardarMensaje,guardarFechaHora));
                     }
 
                     Log.e("BIENBIEN", "SEMAFORO " + semaforo + "tamanioAnterior " + tamanioAnterior + "listaAcutal tamaño" +guardarMensajes.size());
