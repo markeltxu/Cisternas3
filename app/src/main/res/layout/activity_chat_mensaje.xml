@@ -10,9 +10,9 @@
         android:id="@+id/texto"
         android:layout_width="wrap_content"
         android:layout_height="53dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginLeft="44dp"
 
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:ems="10"
@@ -22,18 +22,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-
-    <Button
-        android:id="@+id/enviar"
-        android:layout_width="94dp"
-        android:layout_height="53dp"
-        android:layout_marginEnd="28dp"
-        android:layout_marginRight="28dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="insertarMensaje"
-        android:text="Enviar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <ListView
         android:id="@+id/verMensaje"
@@ -45,5 +33,47 @@
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </ListView>
+
+    <ImageView
+        android:id="@+id/adjuntar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="220dp"
+        android:layout_marginLeft="220dp"
+        android:layout_marginBottom="13dp"
+        android:onClick="chooseFile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/clip" />
+
+    <ImageView
+        android:id="@+id/enviar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="insertarMensaje"
+        android:tint="#009688"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.187"
+        app:layout_constraintStart_toEndOf="@+id/adjuntar"
+        app:srcCompat="@android:drawable/ic_media_play" />
+
+    <TextView
+        android:id="@+id/prueba"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:layout_marginLeft="42dp"
+        android:layout_marginBottom="96dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/texto"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

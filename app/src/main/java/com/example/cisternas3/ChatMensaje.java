@@ -1,7 +1,11 @@
 package com.example.cisternas3;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -21,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,8 +38,11 @@ public class ChatMensaje extends AppCompatActivity {
     String usuarioOrigen, usuarioDestino, fecha;
     EditText texto;
     ListView verMensaje;
+    TextView prueba;
     int tamanioAnterior = 0, tamanioActual = 0;
     boolean semaforo = true;
+    Intent myVentanaFile;
+    private static final int PICKFILE_RESULT_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +52,7 @@ public class ChatMensaje extends AppCompatActivity {
         usuarioOrigen = getIntent().getExtras().getString("usuOrigen");
         usuarioDestino = getIntent().getExtras().getString("usuDestino");
         verMensaje = (ListView) findViewById(R.id.verMensaje);
-
+        prueba = (TextView) findViewById(R.id.prueba);
 
         verMensaje.getLastVisiblePosition();
         final Handler handler = new Handler();
@@ -152,4 +161,67 @@ public class ChatMensaje extends AppCompatActivity {
             queue.add(obtenerMensajesRequest);
 
     }
+
+
+
+    public void chooseFile(View view){
+        Intent intent = new Intent();
+        //sets the select file to all types of files
+        intent.setType("*/*");
+        //allows to select data and return it
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        //starts new activity to select file and return data
+        startActivityForResult(Intent.createChooser(intent,"Choose File to Upload.."),PICKFILE_RESULT_CODE);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String ficheroElegido = data.getData().getPath();
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == PICKFILE_RESULT_CODE){
+                if(data == null){
+                    //no data present
+                    return;
+                }
+
+
+                Uri selectedFileUri = data.getData();
+                //selectedFilePath = FilePath.getPath(this,selectedFileUri);
+                //Log.i(TAG,"Selected File Path:" + selectedFilePath);
+
+                //if(selectedFilePath != null && !selectedFilePath.equals("")){
+                    prueba.setText(selectedFileUri.toString());
+                Log.e("choosen file: ", ficheroElegido + " -- Uri: " + selectedFileUri);
+
+                //}else{
+                  // Toast.makeText(this,"Cannot upload file to server",Toast.LENGTH_SHORT).show();
+               // }
+            }
+        }
+    }
+
+
+
+   /* @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch(requestCode){
+            case PICKFILE_RESULT_CODE:
+                if(resultCode==RESULT_OK) {
+                    //InputStream inputStream = context.getContentResolver().openInputStream(data.getData());
+
+                    String path = data.getData().getPath();
+                    String FileName = data.getData().getLastPathSegment();
+                    String FilePath = data.getData().getPath();
+                    //String a = data.getData().get
+                    prueba.setText(FileName);
+                    Toast.makeText(getApplicationContext(), path, Toast.LENGTH_SHORT).show();
+                    Log.e("choosen file: ", FileName + " -- " + FilePath);
+                }
+            break;
+
+        }
+    }*/
+
 }
