@@ -3,8 +3,11 @@ package com.example.cisternas3;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,23 +29,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
+
 import android.os.Handler;
 
+
 public class ChatMensaje extends AppCompatActivity {
-    String usuarioOrigen, usuarioDestino, fecha;
+    String usuarioOrigen, usuarioDestino, fecha, rutaFotoCamaraGaleria ;
     EditText texto;
     ListView verMensaje;
     TextView prueba;
     int tamanioAnterior = 0, tamanioActual = 0;
     boolean semaforo = true;
     Intent myVentanaFile;
-    private static final int PICKFILE_RESULT_CODE = 1;
+    private static final int ACTIVITY_CHOOSE_FILE = 1;
+    String filenameGaleria;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,63 +174,46 @@ public class ChatMensaje extends AppCompatActivity {
 
 
     public void chooseFile(View view){
-        Intent intent = new Intent();
+        Intent chooseFile;
+        Intent intent;
+        chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+        chooseFile.setType("*/*");
+        intent = Intent.createChooser(chooseFile, "Choose a file");
+        startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
+        /*String path = this.getFilesDir().getAbsolutePath();
+        File file = new File(path + "/abikor.txt");
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, 0);*/
+        //Intent intent = new Intent();
         //sets the select file to all types of files
-        intent.setType("*/*");
+        //intent.setType("*/*");
         //allows to select data and return it
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        //intent.setAction(Intent.ACTION_GET_CONTENT);
         //starts new activity to select file and return data
-        startActivityForResult(Intent.createChooser(intent,"Choose File to Upload.."),PICKFILE_RESULT_CODE);
+        //startActivityForResult(Intent.createChooser(intent,"Choose File to Upload.."),PICKFILE_RESULT_CODE);
+
     }
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        String ficheroElegido = data.getData().getPath();
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == PICKFILE_RESULT_CODE){
-                if(data == null){
-                    //no data present
-                    return;
-                }
-
-
-                Uri selectedFileUri = data.getData();
-                //selectedFilePath = FilePath.getPath(this,selectedFileUri);
-                //Log.i(TAG,"Selected File Path:" + selectedFilePath);
-
-                //if(selectedFilePath != null && !selectedFilePath.equals("")){
-                    prueba.setText(selectedFileUri.toString());
-                Log.e("choosen file: ", ficheroElegido + " -- Uri: " + selectedFileUri);
-
-                //}else{
-                  // Toast.makeText(this,"Cannot upload file to server",Toast.LENGTH_SHORT).show();
-               // }
-            }
+        if (resultCode != RESULT_OK) return;
+        String path     = "";
+        if(requestCode == ACTIVITY_CHOOSE_FILE)
+        {
+            Uri uri = data.getData();
+            String FilePath = getRealPathFromURI(uri); // should the path be here in this string
+            System.out.print("Path  = " + FilePath);
+            Log.e("El elegido: ", FilePath + " -- Uri: " + uri);
+            prueba.setText(FilePath);
         }
     }
 
-
-
-   /* @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch(requestCode){
-            case PICKFILE_RESULT_CODE:
-                if(resultCode==RESULT_OK) {
-                    //InputStream inputStream = context.getContentResolver().openInputStream(data.getData());
-
-                    String path = data.getData().getPath();
-                    String FileName = data.getData().getLastPathSegment();
-                    String FilePath = data.getData().getPath();
-                    //String a = data.getData().get
-                    prueba.setText(FileName);
-                    Toast.makeText(getApplicationContext(), path, Toast.LENGTH_SHORT).show();
-                    Log.e("choosen file: ", FileName + " -- " + FilePath);
-                }
-            break;
-
-        }
-    }*/
+    public String getRealPathFromURI(Uri contentUri) {
+        String [] proj      = {MediaStore.Images.Media.DATA};
+        Cursor cursor       = getContentResolver().query( contentUri, proj, null, null,null);
+        if (cursor == null) return null;
+        int column_index    = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
 
 }
