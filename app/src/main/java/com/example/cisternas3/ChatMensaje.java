@@ -1,25 +1,23 @@
 package com.example.cisternas3;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -29,16 +27,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 import android.os.Handler;
+import android.widget.Toast;
 
 
 public class ChatMensaje extends AppCompatActivity {
@@ -51,6 +50,8 @@ public class ChatMensaje extends AppCompatActivity {
     Intent myVentanaFile;
     private static final int ACTIVITY_CHOOSE_FILE = 1;
     String filenameGaleria;
+    ImageView imagenPrueba;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class ChatMensaje extends AppCompatActivity {
         usuarioDestino = getIntent().getExtras().getString("usuDestino");
         verMensaje = (ListView) findViewById(R.id.verMensaje);
         prueba = (TextView) findViewById(R.id.prueba);
+        imagenPrueba = (ImageView)findViewById(R.id.imagenPrueba);
 
         verMensaje.getLastVisiblePosition();
         final Handler handler = new Handler();
@@ -144,7 +146,7 @@ public class ChatMensaje extends AppCompatActivity {
                         listaMensajes.add(new MensajesPlantilla(usuarioOrigen,guardarMensaje,guardarFechaHora));
                     }
 
-                    Log.e("BIENBIEN", "SEMAFORO " + semaforo + "tamanioAnterior " + tamanioAnterior + "listaAcutal tamaño" +guardarMensajes.size());
+                    //Log.e("BIENBIEN", "SEMAFORO " + semaforo + "tamanioAnterior " + tamanioAnterior + "listaAcutal tamaño" +guardarMensajes.size());
                     if(tamanioAnterior == guardarMensajes.size()){
                         semaforo = false;
                     }else{
@@ -199,11 +201,41 @@ public class ChatMensaje extends AppCompatActivity {
         String path     = "";
         if(requestCode == ACTIVITY_CHOOSE_FILE)
         {
-            Uri uri = data.getData();
-            String FilePath = getRealPathFromURI(uri); // should the path be here in this string
-            System.out.print("Path  = " + FilePath);
-            Log.e("El elegido: ", FilePath + " -- Uri: " + uri);
-            prueba.setText(FilePath);
+            Uri FilePath = data.getData();
+            try {
+                String nombreArchivo = getRealPathFromURI(FilePath); // should the path be here in this string
+                InputStream inputStream = getContentResolver().openInputStream(FilePath);
+                bitmap = BitmapFactory.decodeStream(inputStream);
+
+                //System.out.print("Path  = " + FilePath);
+                Log.e("El elegido: ", nombreArchivo + " -- bitmap: " + bitmap);
+                imagenPrueba.setImageBitmap(bitmap);
+                //prueba.setText(FilePath);
+
+
+                String archivo = imageToString(bitmap);
+
+                Response.Listener<String> responseListenerSubirArchivos = new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        /*try {
+                            //JSONObject jsonResponse = new JSONObject(response);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            //Log.e("ADIOS", "" + nombre + " " + pass + " " + response);
+                            //Toast.makeText(getApplicationContext(), "Nombre o contraseña mal introducidos", Toast.LENGTH_SHORT).show();
+                        }*/
+                    }
+                };
+
+                SubirArchivosRequest subirArchivosRequest = new SubirArchivosRequest(archivo,nombreArchivo,responseListenerSubirArchivos);
+                RequestQueue queue = Volley.newRequestQueue(ChatMensaje.this);
+                queue.add(subirArchivosRequest);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -214,6 +246,15 @@ public class ChatMensaje extends AppCompatActivity {
         int column_index    = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    private String imageToString(Bitmap bitmap){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+        byte[] imageBytes = outputStream.toByteArray();
+
+        String encode = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encode;
     }
 
 }
